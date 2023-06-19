@@ -1,4 +1,4 @@
-package run
+package try_run
 
 import (
 	"errors"
