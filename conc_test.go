@@ -6,10 +6,11 @@ import (
 	"time"
 
 	"github.com/davidmz/go-conc"
+	"github.com/davidmz/go-conc/dispose"
 )
 
 func Example_single() {
-	conc.Run(func(onDispose conc.OnDispose) error {
+	conc.Run(func(onDispose dispose.It) error {
 		fmt.Println("Hello #1")
 		onDispose(func() { fmt.Println("Dispose #1") })
 		return nil
@@ -21,7 +22,7 @@ func Example_single() {
 
 func Example_parallel() {
 	conc.Run(
-		func(onDispose conc.OnDispose) error {
+		func(onDispose dispose.It) error {
 			fmt.Println("Hello #1.1")
 			time.Sleep(10 * time.Millisecond)
 			fmt.Println("Hello #1.2")
@@ -29,7 +30,7 @@ func Example_parallel() {
 			onDispose(func() { fmt.Println("Dispose #1") })
 			return nil
 		},
-		func(onDispose conc.OnDispose) error {
+		func(onDispose dispose.It) error {
 			onDispose(func() { fmt.Println("Dispose #2") })
 			time.Sleep(5 * time.Millisecond)
 			fmt.Println("Hello #2.1")
@@ -49,7 +50,7 @@ func Example_parallel() {
 
 func Example_tree() {
 	err := conc.Run(
-		func(onDispose conc.OnDispose) error {
+		func(onDispose dispose.It) error {
 			fmt.Println("Hello #1.1")
 			time.Sleep(10 * time.Millisecond)
 			fmt.Println("Hello #1.2")
@@ -58,7 +59,7 @@ func Example_tree() {
 			return nil
 		},
 		conc.Tasks(
-			func(onDispose conc.OnDispose) error {
+			func(onDispose dispose.It) error {
 				onDispose(func() { fmt.Println("Dispose #2") })
 				time.Sleep(5 * time.Millisecond)
 				fmt.Println("Hello #2.1")
@@ -66,7 +67,7 @@ func Example_tree() {
 				fmt.Println("Hello #2.2")
 				return nil
 			},
-			func(onDispose conc.OnDispose) error {
+			func(onDispose dispose.It) error {
 				time.Sleep(5 * time.Millisecond)
 				onDispose(func() { fmt.Println("Dispose #3") })
 				time.Sleep(9 * time.Millisecond)
@@ -93,11 +94,11 @@ func Example_tree() {
 
 func Example_parallel_errors() {
 	err := conc.Run(
-		func(onDispose conc.OnDispose) error {
+		func(onDispose dispose.It) error {
 			fmt.Println("Hello #1.1")
 			return errors.New("Error #1")
 		},
-		func(onDispose conc.OnDispose) error {
+		func(onDispose dispose.It) error {
 			time.Sleep(5 * time.Millisecond)
 			fmt.Println("Hello #2.1")
 			return errors.New("Error #2")
